@@ -11,7 +11,7 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-background to-background/50 dark:from-background/5 dark:to-background/20" />
         <div className="container relative">
           <div className="flex flex-col items-center text-center space-y-8">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-slate-green-light text-slate-green border-slate-green/20">
+            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-slate-blue-light text-slate-blue border-slate-blue/20">
               <Zap className="mr-2 h-4 w-4" />
               POWERED BY AI
             </div>
