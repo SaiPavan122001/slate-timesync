@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    --primary: 86 65% 44%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 86 65% 44%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,17 +34,17 @@ All colors MUST be HSL.
 
     --border: 0 0% 89%;
     --input: 0 0% 89%;
-    --ring: 86 65% 44%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
     /* Slate AI Brand Colors */
-    --slate-green: 86 65% 44%;
-    --slate-green-hover: 86 65% 38%;
-    --slate-green-light: 86 65% 94%;
+    --slate-blue: 217 91% 60%;
+    --slate-blue-hover: 217 91% 55%;
+    --slate-blue-light: 217 91% 94%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(86 65% 44%), hsl(86 65% 38%));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 55%));
     --gradient-dark: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 10%));
     
     /* Shadows */
@@ -78,7 +78,7 @@ All colors MUST be HSL.
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 86 65% 44%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 10%;
@@ -87,7 +87,7 @@ All colors MUST be HSL.
     --muted: 0 0% 10%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 86 65% 44%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -95,10 +95,10 @@ All colors MUST be HSL.
 
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 86 65% 44%;
+    --ring: 217 91% 60%;
     
     /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(86 65% 44%), hsl(86 65% 50%));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 65%));
     --gradient-dark: linear-gradient(135deg, hsl(0 0% 3%), hsl(0 0% 8%));
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
