@@ -83,6 +83,138 @@ export type Database = {
           },
         ]
       }
+      attendance_audit_logs: {
+        Row: {
+          action: string
+          attendance_id: string
+          changed_by: string
+          created_at: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          attendance_id: string
+          changed_by: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          attendance_id?: string
+          changed_by?: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      attendance_policies: {
+        Row: {
+          break_duration_minutes: number | null
+          created_at: string
+          description: string | null
+          grace_period_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          overtime_threshold_hours: number | null
+          updated_at: string
+          working_hours_end: string
+          working_hours_start: string
+        }
+        Insert: {
+          break_duration_minutes?: number | null
+          created_at?: string
+          description?: string | null
+          grace_period_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          overtime_threshold_hours?: number | null
+          updated_at?: string
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Update: {
+          break_duration_minutes?: number | null
+          created_at?: string
+          description?: string | null
+          grace_period_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          overtime_threshold_hours?: number | null
+          updated_at?: string
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Relationships: []
+      }
+      attendance_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          is_sent: boolean | null
+          profile_id: string
+          reminder_time: string
+          reminder_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_sent?: boolean | null
+          profile_id: string
+          reminder_time: string
+          reminder_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_sent?: boolean | null
+          profile_id?: string
+          reminder_time?: string
+          reminder_type?: string
+        }
+        Relationships: []
+      }
+      holidays: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          is_recurring: boolean | null
+          name: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          is_recurring?: boolean | null
+          name: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          is_recurring?: boolean | null
+          name?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
       leave_balances: {
         Row: {
           created_at: string

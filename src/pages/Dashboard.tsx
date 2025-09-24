@@ -129,7 +129,7 @@ export default function Dashboard() {
 
         {/* Main Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = '/attendance'}>
             <CardHeader>
               <Clock className="h-12 w-12 text-primary mb-4" />
               <CardTitle>Attendance</CardTitle>
@@ -139,7 +139,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <Button className="w-full">
-                Quick Check-In
+                Manage Attendance
               </Button>
             </CardContent>
           </Card>
