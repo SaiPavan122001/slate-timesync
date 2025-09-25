@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, Calendar, Users, BarChart3, Settings, LogOut } from 'lucide-react';
+import { Clock, Calendar, Users, BarChart3, Settings, LogOut, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export default function Dashboard() {
@@ -192,17 +192,17 @@ export default function Dashboard() {
           )}
 
           {userRole === 'super_admin' && (
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = '/role-management'}>
               <CardHeader>
-                <Settings className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Administration</CardTitle>
+                <Shield className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Role Management</CardTitle>
                 <CardDescription>
-                  Manage users, configure policies, and system settings
+                  Manage roles, permissions, and user access control
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button className="w-full" variant="outline">
-                  Admin Panel
+                  Configure RBAC
                 </Button>
               </CardContent>
             </Card>
