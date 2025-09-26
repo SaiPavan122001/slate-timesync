@@ -8,8 +8,9 @@ import { Navigation } from "@/components/navigation";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Attendance from "./pages/Attendance";
-import RoleManagement from "./pages/RoleManagement";
+import Attendance from "@/pages/Attendance";
+import Timesheets from "@/pages/Timesheets";
+import RoleManagement from "@/pages/RoleManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,8 +28,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/attendance" element={<Attendance />} />
-              <Route path="/role-management" element={<RoleManagement />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/timesheets" element={<Timesheets />} />
+          <Route path="/role-management" element={<RoleManagement />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
