@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Attendance from "@/pages/Attendance";
 import Timesheets from "@/pages/Timesheets";
 import RoleManagement from "@/pages/RoleManagement";
+import Leave from "@/pages/Leave";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/timesheets" element={<Timesheets />} />
+          <Route path="/leave" element={<Leave />} />
           <Route path="/role-management" element={<RoleManagement />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

@@ -160,7 +160,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/leave')}>
             <CardHeader>
               <Users className="h-12 w-12 text-primary mb-4" />
               <CardTitle>Leave Requests</CardTitle>
