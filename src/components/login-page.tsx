@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import slateLogo from "@/assets/slate-logo.png";
 
 export function LoginPage() {
-  const { user, signIn, signUp, loading } = useAuth();
+  const { user, signIn, signUp, loading, resetPassword, signInWithGoogle, signInWithGitHub } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -26,6 +26,8 @@ export function LoginPage() {
     domain: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   // Redirect if user is already logged in
   if (user && !loading) {
@@ -101,6 +103,23 @@ export function LoginPage() {
     setIsSubmitting(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) {
+      setErrors({ resetEmail: "Please enter your email" });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    const { error } = await resetPassword(resetEmail);
+    setIsSubmitting(false);
+    
+    if (!error) {
+      setShowForgotPassword(false);
+      setResetEmail("");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-dark p-4">
       <div className="w-full max-w-md">
@@ -150,11 +169,63 @@ export function LoginPage() {
                     />
                     {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                   </div>
-                  {errors.general && <p className="text-sm text-red-500">{errors.general}</p>}
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Signing in..." : "Sign In"}
-                  </Button>
-                </form>
+                   {errors.general && <p className="text-sm text-red-500">{errors.general}</p>}
+                   <Button type="submit" className="w-full" disabled={isSubmitting}>
+                     {isSubmitting ? "Signing in..." : "Sign In"}
+                   </Button>
+                   
+                   <div className="text-center">
+                     <Button
+                       type="button"
+                       variant="link"
+                       className="text-sm p-0 h-auto"
+                       onClick={() => setShowForgotPassword(true)}
+                     >
+                       Forgot your password?
+                     </Button>
+                   </div>
+                 </form>
+                 
+                 {showForgotPassword && (
+                   <Card className="mt-4 border-muted">
+                     <CardHeader>
+                       <CardTitle className="text-lg">Reset Password</CardTitle>
+                       <CardDescription>Enter your email to receive a reset link</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                       <form onSubmit={handleForgotPassword} className="space-y-4">
+                         <div className="space-y-2">
+                           <Label htmlFor="reset-email">Email</Label>
+                           <Input
+                             id="reset-email"
+                             type="email"
+                             placeholder="Enter your email"
+                             value={resetEmail}
+                             onChange={(e) => setResetEmail(e.target.value)}
+                             className={errors.resetEmail ? "border-red-500" : ""}
+                           />
+                           {errors.resetEmail && <p className="text-sm text-red-500">{errors.resetEmail}</p>}
+                         </div>
+                         <div className="flex gap-2">
+                           <Button type="submit" disabled={isSubmitting} className="flex-1">
+                             {isSubmitting ? "Sending..." : "Send Reset Link"}
+                           </Button>
+                           <Button
+                             type="button"
+                             variant="outline"
+                             onClick={() => {
+                               setShowForgotPassword(false);
+                               setResetEmail("");
+                               setErrors({});
+                             }}
+                           >
+                             Cancel
+                           </Button>
+                         </div>
+                       </form>
+                     </CardContent>
+                   </Card>
+                 )}
               </TabsContent>
               
               <TabsContent value="signup" className="space-y-4">
@@ -251,18 +322,25 @@ export function LoginPage() {
                 Or continue with
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full" disabled>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={signInWithGitHub}
+                  disabled={isSubmitting}
+                >
                   <Github className="mr-2 h-4 w-4" />
                   GitHub
                 </Button>
-                <Button variant="outline" className="w-full" disabled>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={signInWithGoogle}
+                  disabled={isSubmitting}
+                >
                   <Mail className="mr-2 h-4 w-4" />
                   Google
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                Social login integration coming soon
-              </p>
             </div>
           </CardContent>
         </Card>

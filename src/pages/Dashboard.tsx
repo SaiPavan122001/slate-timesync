@@ -176,12 +176,12 @@ export default function Dashboard() {
           </Card>
 
           {(userRole === 'manager' || userRole === 'hr' || userRole === 'super_admin') && (
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/team-management')}>
               <CardHeader>
-                <BarChart3 className="h-12 w-12 text-primary mb-4" />
+                <Users className="h-12 w-12 text-primary mb-4" />
                 <CardTitle>Team Management</CardTitle>
                 <CardDescription>
-                  View team attendance, approve requests, and generate reports
+                  Manage organization structure, departments, and team members
                 </CardDescription>
               </CardHeader>
               <CardContent>
