@@ -65,12 +65,25 @@ export const useTimesheets = () => {
     const endDate = format(endOfWeek(weekStartDate), 'yyyy-MM-dd');
 
     try {
+      // Get current user's profile_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!profile) throw new Error('Profile not found');
+
       // Check if timesheet already exists
       const { data: existing, error: fetchError } = await supabase
         .from('timesheets')
         .select('*, entries:timesheet_entries(*)')
         .eq('week_start_date', startDate)
-        .single();
+        .eq('profile_id', profile.id)
+        .maybeSingle();
 
       if (existing && !fetchError) {
         setCurrentTimesheet(existing);
@@ -86,7 +99,7 @@ export const useTimesheets = () => {
           week_end_date: endDate,
           total_hours: 0,
           status: 'draft',
-          profile_id: '', // This will be handled by RLS
+          profile_id: profile.id,
         })
         .select()
         .single();
