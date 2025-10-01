@@ -5,13 +5,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Github, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import slateLogo from "@/assets/slate-logo.png";
 
 export function LoginPage() {
-  const { user, signIn, signUp, loading, resetPassword } = useAuth();
+  const { user, signIn, signUp, loading, resetPassword, signInWithGoogle, signInWithGitHub } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -313,6 +315,33 @@ export function LoginPage() {
                 </form>
               </TabsContent>
             </Tabs>
+            
+            <div className="mt-6">
+              <Separator className="my-4" />
+              <div className="text-center text-sm text-muted-foreground mb-4">
+                Or continue with
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={signInWithGitHub}
+                  disabled={isSubmitting}
+                >
+                  <Github className="mr-2 h-4 w-4" />
+                  GitHub
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={signInWithGoogle}
+                  disabled={isSubmitting}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Google
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
