@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { TeamMembersList } from "@/components/team/TeamMembersList";
 import { OrganizationChart } from "@/components/team/OrganizationChart";
 import { DepartmentManager } from "@/components/team/DepartmentManager";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const TeamManagement = () => {
+  const navigate = useNavigate();
   const { user, loading, userRole } = useAuth();
 
   if (loading) {
@@ -43,6 +46,16 @@ const TeamManagement = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/dashboard')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+        </div>
         <h1 className="text-3xl font-bold">Team Management</h1>
         <p className="text-muted-foreground mt-2">
           Manage your organization's team structure, departments, and employee hierarchy

@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar, Clock, FileText, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Clock, FileText, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +14,7 @@ import { useTimesheets } from '@/hooks/useTimesheets';
 import { useRBAC } from '@/hooks/useRBAC';
 
 export default function Timesheets() {
+  const navigate = useNavigate();
   const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const { timesheets, currentTimesheet, loading } = useTimesheets();
   const { hasPermission } = useRBAC();
@@ -40,11 +42,21 @@ export default function Timesheets() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Timesheets</h1>
-          <p className="text-muted-foreground">
-            Track your work hours and submit weekly timesheets
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/dashboard')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Timesheets</h1>
+            <p className="text-muted-foreground">
+              Track your work hours and submit weekly timesheets
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={goToCurrentWeek}>

@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { RoleManager } from '@/components/rbac/RoleManager';
 import { PermissionMatrix } from '@/components/rbac/PermissionMatrix';
 import { UserRoleAssignment } from '@/components/rbac/UserRoleAssignment';
 import { AuditLogs } from '@/components/rbac/AuditLogs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Users, Settings, FileText } from 'lucide-react';
+import { Shield, Users, Settings, FileText, ArrowLeft } from 'lucide-react';
 import { useRBAC } from '@/hooks/useRBAC';
 
 const RoleManagement = () => {
+  const navigate = useNavigate();
   const { user, userRole, loading: authLoading } = useAuth();
   const { hasPermission, loading: rbacLoading } = useRBAC();
 
@@ -45,6 +47,16 @@ const RoleManagement = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/dashboard')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+        </div>
         <h1 className="text-3xl font-bold tracking-tight">Role & Access Management</h1>
         <p className="text-muted-foreground mt-2">
           Manage roles, permissions, and user access across the system.

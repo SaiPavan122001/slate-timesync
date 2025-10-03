@@ -1,10 +1,11 @@
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useLeave } from '@/hooks/useLeave';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, Users, Settings, ArrowLeft } from 'lucide-react';
 import LeaveRequestForm from '@/components/leave/LeaveRequestForm';
 import LeaveBalanceCard from '@/components/leave/LeaveBalanceCard';
 import LeaveRequestsList from '@/components/leave/LeaveRequestsList';
@@ -12,6 +13,7 @@ import LeaveTypeManager from '@/components/leave/LeaveTypeManager';
 import HolidayManager from '@/components/leave/HolidayManager';
 
 export default function Leave() {
+  const navigate = useNavigate();
   const { user, profile, userRole, loading: authLoading } = useAuth();
   const { loading: leaveLoading } = useLeave();
 
@@ -36,6 +38,15 @@ export default function Leave() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="mr-2"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Dashboard
+              </Button>
               <h1 className="text-2xl font-bold">Leave Management</h1>
               <Badge variant="outline">
                 {userRole?.replace('_', ' ').toUpperCase()}

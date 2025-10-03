@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAttendance } from '@/hooks/useAttendance';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, Coffee, LogIn, LogOut, Calendar, Users, Settings } from 'lucide-react';
+import { Clock, Coffee, LogIn, LogOut, Calendar, Users, Settings, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { AttendanceTimeline } from '@/components/attendance/AttendanceTimeline';
 import { AttendancePolicyManager } from '@/components/attendance/AttendancePolicyManager';
 
 export default function Attendance() {
+  const navigate = useNavigate();
   const { user, profile, userRole, loading: authLoading } = useAuth();
   const { 
     todaysAttendance, 
@@ -81,6 +82,15 @@ export default function Attendance() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="mr-2"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Dashboard
+              </Button>
               <h1 className="text-2xl font-bold">Attendance</h1>
               <Badge variant="outline">
                 {format(new Date(), 'EEEE, MMMM do, yyyy')}
