@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "react-router-dom"
 import { AppLauncher } from "@/components/AppLauncher"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function LandingPage() {
   const [appLauncherOpen, setAppLauncherOpen] = useState(false)
@@ -55,6 +56,7 @@ export function LandingPage() {
             <img src="/src/assets/slate-logo.png" alt="Slate AI" className="h-8 w-auto" />
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
