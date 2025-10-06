@@ -1,9 +1,13 @@
-import { ArrowRight, Clock, Users, Calendar, BarChart3, DollarSign, MessageSquare, CheckCircle2 } from "lucide-react"
+import { useState } from "react"
+import { ArrowRight, Clock, Users, Calendar, BarChart3, DollarSign, MessageSquare, CheckCircle2, Grid3x3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "react-router-dom"
+import { AppLauncher } from "@/components/AppLauncher"
 
 export function LandingPage() {
+  const [appLauncherOpen, setAppLauncherOpen] = useState(false)
+
   const modules = [
     {
       title: "HRMS",
@@ -44,6 +48,33 @@ export function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      {/* Header with App Launcher */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/src/assets/slate-logo.png" alt="Slate AI" className="h-8 w-auto" />
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setAppLauncherOpen(true)}
+              className="rounded-full"
+            >
+              <Grid3x3 className="h-5 w-5" />
+            </Button>
+            <Link to="/login">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+                SIGN IN
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* App Launcher Modal */}
+      <AppLauncher open={appLauncherOpen} onOpenChange={setAppLauncherOpen} />
+
       {/* Hero Section - Google One Style */}
       <section className="relative py-16 lg:py-24">
         <div className="container">
