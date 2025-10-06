@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Roboto', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -48,9 +51,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         slate: {
-          blue: "hsl(var(--slate-blue))",
-          "blue-hover": "hsl(var(--slate-blue-hover))",
-          "blue-light": "hsl(var(--slate-blue-light))",
+          green: "hsl(var(--slate-green))",
+          "green-hover": "hsl(var(--slate-green-hover))",
+          "green-light": "hsl(var(--slate-green-light))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

@@ -17,7 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    --primary: 217 91% 60%;
+    /* Slate AI Primary Green #86BC25 */
+    --primary: 81 65% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
@@ -26,7 +27,7 @@ All colors MUST be HSL.
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 217 91% 60%;
+    --accent: 81 65% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,22 +35,22 @@ All colors MUST be HSL.
 
     --border: 0 0% 89%;
     --input: 0 0% 89%;
-    --ring: 217 91% 60%;
+    --ring: 81 65% 45%;
 
     --radius: 0.75rem;
 
     /* Slate AI Brand Colors */
-    --slate-blue: 217 91% 60%;
-    --slate-blue-hover: 217 91% 55%;
-    --slate-blue-light: 217 91% 94%;
+    --slate-green: 81 65% 45%;
+    --slate-green-hover: 81 65% 40%;
+    --slate-green-light: 81 65% 94%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 55%));
-    --gradient-dark: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 10%));
+    --gradient-primary: linear-gradient(135deg, hsl(81 65% 45%), hsl(81 65% 50%));
+    --gradient-dark: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 100%));
     
     /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(86 65% 44% / 0.2);
-    --shadow-glow: 0 0 40px hsl(86 65% 44% / 0.3);
+    --shadow-elegant: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+    --shadow-glow: 0 4px 16px 0 rgba(134, 188, 37, 0.15);
 
     --sidebar-background: 0 0% 98%;
 
@@ -78,7 +79,7 @@ All colors MUST be HSL.
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 81 65% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 10%;
@@ -87,7 +88,7 @@ All colors MUST be HSL.
     --muted: 0 0% 10%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 217 91% 60%;
+    --accent: 81 65% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -95,10 +96,10 @@ All colors MUST be HSL.
 
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 217 91% 60%;
+    --ring: 81 65% 45%;
     
     /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 65%));
+    --gradient-primary: linear-gradient(135deg, hsl(81 65% 45%), hsl(81 65% 50%));
     --gradient-dark: linear-gradient(135deg, hsl(0 0% 3%), hsl(0 0% 8%));
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
