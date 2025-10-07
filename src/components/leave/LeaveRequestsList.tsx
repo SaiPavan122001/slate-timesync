@@ -64,11 +64,11 @@ export default function LeaveRequestsList({
   };
 
   const handleAction = async (requestId: string, action: 'approve' | 'reject') => {
-    if (!profile?.user_id) return;
+    if (!profile?.id) return;
 
     const updates: any = {
       status: action === 'approve' ? 'approved' : 'rejected',
-      approved_by: profile.user_id,
+      approved_by: profile.id,
     };
 
     if (action === 'reject' && rejectionReason) {

@@ -68,6 +68,7 @@ export function useAuth() {
         return;
       }
 
+      // Fetch from user_roles table (legacy system)
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
@@ -78,10 +79,35 @@ export function useAuth() {
         console.error('Error fetching role:', roleError);
       }
 
+      // Also check RBAC system for role assignments
+      const { data: rbacRoles } = await supabase
+        .from('user_role_assignments')
+        .select(`
+          role:roles(name)
+        `)
+        .eq('user_id', userId);
+
+      // Determine the effective role (prioritize RBAC system)
+      let effectiveRole = roleData?.role || 'employee';
+      
+      // If user has RBAC roles, map them to legacy role names
+      if (rbacRoles && rbacRoles.length > 0) {
+        const rbacRoleNames = rbacRoles.map((r: any) => r.role?.name?.toLowerCase());
+        
+        // Priority: super_admin > hr > manager > employee
+        if (rbacRoleNames.includes('super admin') || rbacRoleNames.includes('admin')) {
+          effectiveRole = 'super_admin';
+        } else if (rbacRoleNames.includes('hr admin') || rbacRoleNames.includes('hr')) {
+          effectiveRole = 'hr';
+        } else if (rbacRoleNames.includes('manager')) {
+          effectiveRole = 'manager';
+        }
+      }
+
       setAuthState(prev => ({
         ...prev,
         profile,
-        userRole: roleData?.role || 'employee',
+        userRole: effectiveRole,
         loading: false,
       }));
     } catch (error) {
