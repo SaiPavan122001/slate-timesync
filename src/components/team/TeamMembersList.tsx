@@ -59,7 +59,8 @@ export function TeamMembersList() {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch profiles with both legacy roles and RBAC roles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select(`
           *,
@@ -68,8 +69,32 @@ export function TeamMembersList() {
         .eq('is_active', true)
         .order('first_name');
 
-      if (error) throw error;
-      setProfiles(data || []);
+      if (profilesError) throw profilesError;
+
+      // Fetch RBAC role assignments for all users
+      const { data: rbacRoles, error: rbacError } = await supabase
+        .from('user_role_assignments')
+        .select(`
+          user_id,
+          roles(name)
+        `);
+
+      if (rbacError) throw rbacError;
+
+      // Merge legacy and RBAC roles
+      const enrichedProfiles = profilesData?.map(profile => {
+        const legacyRoles = profile.user_roles || [];
+        const userRbacRoles = rbacRoles
+          ?.filter(r => r.user_id === profile.user_id)
+          .map(r => ({ role: r.roles?.name })) || [];
+        
+        return {
+          ...profile,
+          user_roles: [...legacyRoles, ...userRbacRoles]
+        };
+      });
+
+      setProfiles(enrichedProfiles || []);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       toast({

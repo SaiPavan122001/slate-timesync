@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { TeamMembersList } from "@/components/team/TeamMembersList";
 import { OrganizationChart } from "@/components/team/OrganizationChart";
 import { DepartmentManager } from "@/components/team/DepartmentManager";
+import { TeamAttendance } from "@/components/team/TeamAttendance";
+import { AttendanceCorrections } from "@/components/team/AttendanceCorrections";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -63,10 +65,12 @@ const TeamManagement = () => {
       </div>
 
       <Tabs defaultValue="members" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="members">Team Members</TabsTrigger>
           <TabsTrigger value="organization">Organization Chart</TabsTrigger>
           <TabsTrigger value="departments">Departments</TabsTrigger>
+          <TabsTrigger value="attendance">Team Attendance</TabsTrigger>
+          <TabsTrigger value="corrections">Corrections</TabsTrigger>
         </TabsList>
 
         <TabsContent value="members">
@@ -107,6 +111,34 @@ const TeamManagement = () => {
             </CardHeader>
             <CardContent>
               <DepartmentManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="attendance">
+          <Card>
+            <CardHeader>
+              <CardTitle>Team Attendance</CardTitle>
+              <CardDescription>
+                View and manage team attendance records
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TeamAttendance />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="corrections">
+          <Card>
+            <CardHeader>
+              <CardTitle>Attendance Corrections</CardTitle>
+              <CardDescription>
+                Review and approve attendance correction requests
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AttendanceCorrections />
             </CardContent>
           </Card>
         </TabsContent>

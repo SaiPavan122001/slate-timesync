@@ -336,15 +336,19 @@ export default function Attendance() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => navigate('/team-management?tab=attendance')}
+                    >
                       <Calendar className="h-4 w-4 mr-2" />
                       Team Attendance
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Clock className="h-4 w-4 mr-2" />
-                      Attendance Reports
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => navigate('/team-management?tab=corrections')}
+                    >
                       <Settings className="h-4 w-4 mr-2" />
                       Corrections & Approvals
                     </Button>
