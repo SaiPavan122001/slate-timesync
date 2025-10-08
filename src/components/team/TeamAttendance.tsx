@@ -47,8 +47,16 @@ export function TeamAttendance() {
       const { data, error } = await supabase
         .from('attendance')
         .select(`
-          *,
-          profiles!attendance_profile_id_fkey(
+          id,
+          date,
+          status,
+          check_in_time,
+          check_out_time,
+          total_hours,
+          is_corrected,
+          correction_reason,
+          profile_id,
+          profiles!profile_id(
             first_name,
             last_name,
             employee_id,

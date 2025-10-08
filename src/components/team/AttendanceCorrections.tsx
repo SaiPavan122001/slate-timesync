@@ -49,8 +49,13 @@ export function AttendanceCorrections() {
       const { data, error } = await supabase
         .from('attendance')
         .select(`
-          *,
-          profiles!attendance_profile_id_fkey(
+          id,
+          date,
+          check_in_time,
+          check_out_time,
+          correction_reason,
+          is_corrected,
+          profiles!profile_id(
             first_name,
             last_name,
             employee_id

@@ -132,7 +132,8 @@ export function OrganizationChart() {
 
   const fetchOrgData = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch profiles with legacy roles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select(`
           *,
@@ -141,14 +142,37 @@ export function OrganizationChart() {
         .eq('is_active', true)
         .order('first_name');
 
-      if (error) throw error;
+      if (profilesError) throw profilesError;
+
+      // Fetch RBAC roles
+      const { data: rbacRoles, error: rbacError } = await supabase
+        .from('user_role_assignments')
+        .select(`
+          user_id,
+          roles(name)
+        `);
+
+      if (rbacError) throw rbacError;
+
+      // Merge legacy and RBAC roles
+      const enrichedProfiles = profilesData?.map(profile => {
+        const legacyRoles = profile.user_roles || [];
+        const userRbacRoles = rbacRoles
+          ?.filter(r => r.user_id === profile.user_id)
+          .map(r => ({ role: r.roles?.name })) || [];
+        
+        return {
+          ...profile,
+          user_roles: [...legacyRoles, ...userRbacRoles]
+        };
+      });
 
       // Build the organizational hierarchy
       const profileMap = new Map<string, Profile>();
       const rootProfiles: Profile[] = [];
 
       // First pass: create the map and identify root profiles
-      data?.forEach((profile) => {
+      enrichedProfiles?.forEach((profile) => {
         const profileWithSubs = { ...profile, subordinates: [] };
         profileMap.set(profile.id, profileWithSubs);
         
@@ -158,7 +182,7 @@ export function OrganizationChart() {
       });
 
       // Second pass: build the hierarchy
-      data?.forEach((profile) => {
+      enrichedProfiles?.forEach((profile) => {
         if (profile.manager_id) {
           const manager = profileMap.get(profile.manager_id);
           const subordinate = profileMap.get(profile.id);
