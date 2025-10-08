@@ -44,30 +44,42 @@ export function TeamAttendance() {
 
   const fetchTeamAttendance = async () => {
     try {
-      const { data, error } = await supabase
-        .from('attendance')
-        .select(`
-          id,
-          date,
-          status,
-          check_in_time,
-          check_out_time,
-          total_hours,
-          is_corrected,
-          correction_reason,
-          profile_id,
-          profiles!profile_id(
-            first_name,
-            last_name,
-            employee_id,
-            department
-          )
-        `)
-        .eq('date', dateFilter)
-        .order('check_in_time', { ascending: true });
+      // First, fetch all active employees
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, employee_id, department')
+        .eq('is_active', true)
+        .order('first_name');
 
-      if (error) throw error;
-      setRecords(data || []);
+      if (profilesError) throw profilesError;
+
+      // Then fetch attendance records for the selected date
+      const { data: attendanceData, error: attendanceError } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('date', dateFilter);
+
+      if (attendanceError) throw attendanceError;
+
+      // Merge profiles with their attendance records
+      const mergedRecords = profiles.map(profile => {
+        const attendance = attendanceData?.find(a => a.profile_id === profile.id);
+        
+        return {
+          id: attendance?.id || `no-record-${profile.id}`,
+          date: dateFilter,
+          status: attendance?.status || 'absent',
+          check_in_time: attendance?.check_in_time || null,
+          check_out_time: attendance?.check_out_time || null,
+          total_hours: attendance?.total_hours || null,
+          is_corrected: attendance?.is_corrected || false,
+          correction_reason: attendance?.correction_reason || null,
+          profile_id: profile.id,
+          profiles: profile
+        };
+      });
+
+      setRecords(mergedRecords);
     } catch (error) {
       console.error('Error fetching team attendance:', error);
       toast({
