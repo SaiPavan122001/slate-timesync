@@ -1,13 +1,18 @@
 import { useState } from "react"
-import { ArrowRight, Clock, Users, Calendar, BarChart3, DollarSign, MessageSquare, CheckCircle2, Grid3x3 } from "lucide-react"
+import { ArrowRight, Clock, Users, Calendar, BarChart3, DollarSign, MessageSquare, CheckCircle2, Grid3x3, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "react-router-dom"
 import { AppLauncher } from "@/components/AppLauncher"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "@/components/theme-provider"
+import slateLogoLight from "@/assets/slate-logo-light.png"
+import slateLogoDark from "@/assets/slate-logo-dark.png"
 
 export function LandingPage() {
   const [appLauncherOpen, setAppLauncherOpen] = useState(false)
+  const { theme } = useTheme()
+  const logo = theme === "dark" ? slateLogoDark : slateLogoLight
 
   const modules = [
     {
@@ -53,7 +58,7 @@ export function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/src/assets/slate-logo.png" alt="Slate AI" className="h-8 w-auto" />
+            <img src={logo} alt="Slate AI" className="h-8 w-auto" />
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -192,6 +197,152 @@ export function LandingPage() {
                 Powerful insights with real-time dashboards and custom report generation
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-16 lg:py-24">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-normal tracking-tight mb-4 text-foreground">
+              Choose your plan
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-normal">
+              Simple, transparent pricing that grows with you
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <Card className="border-2 border-border rounded-2xl">
+              <CardHeader className="space-y-4 pb-8">
+                <CardTitle className="text-2xl font-normal">Free</CardTitle>
+                <div>
+                  <span className="text-4xl font-normal">$0</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <CardDescription className="text-base">
+                  Perfect for getting started
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Up to 10 employees</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Basic attendance tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Leave management</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Basic reports</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button variant="outline" className="w-full rounded-full">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="border-2 border-primary rounded-2xl relative shadow-elegant">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
+                  Popular
+                </span>
+              </div>
+              <CardHeader className="space-y-4 pb-8 pt-8">
+                <CardTitle className="text-2xl font-normal">Premium</CardTitle>
+                <div>
+                  <span className="text-4xl font-normal">$49</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <CardDescription className="text-base">
+                  For growing businesses
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Up to 50 employees</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Advanced attendance & timesheets</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Role-based access control</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Advanced analytics</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Priority support</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button className="w-full rounded-full bg-primary hover:bg-primary/90">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Team Plan */}
+            <Card className="border-2 border-border rounded-2xl">
+              <CardHeader className="space-y-4 pb-8">
+                <CardTitle className="text-2xl font-normal">Team</CardTitle>
+                <div>
+                  <span className="text-4xl font-normal">$99</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <CardDescription className="text-base">
+                  For large organizations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Unlimited employees</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">All Premium features</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Custom workflows</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">API access</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">Dedicated support</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button variant="outline" className="w-full rounded-full">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

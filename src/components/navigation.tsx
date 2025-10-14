@@ -1,14 +1,19 @@
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import slateLogo from "@/assets/slate-logo.png"
+import { useTheme } from "@/components/theme-provider"
+import slateLogoLight from "@/assets/slate-logo-light.png"
+import slateLogoDark from "@/assets/slate-logo-dark.png"
 
 export function Navigation() {
+  const { theme } = useTheme()
+  const logo = theme === "dark" ? slateLogoDark : slateLogoLight
+  
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <img src={slateLogo} alt="Slate AI" className="h-8 w-auto" />
+          <img src={logo} alt="Slate AI" className="h-8 w-auto" />
         </Link>
         
         <div className="flex items-center space-x-4">
