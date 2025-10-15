@@ -57,15 +57,36 @@ export const TimesheetList = ({ timesheets, loading }: TimesheetListProps) => {
       ['Date', 'Project', 'Description', 'Hours', 'Billable']
     ];
 
-    timesheet.entries?.forEach(entry => {
-      ws_data.push([
-        format(parseISO(entry.date), 'EEE, MMM d, yyyy'),
-        entry.project_name || '-',
-        entry.task_description || '-',
-        entry.hours,
-        entry.is_billable ? 'Yes' : 'No'
-      ]);
-    });
+    // Generate all 7 days of the week
+    const startDate = parseISO(timesheet.week_start_date);
+    const endDate = parseISO(timesheet.week_end_date);
+    
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = format(d, 'yyyy-MM-dd');
+      const dayEntries = timesheet.entries?.filter(e => e.date === dateStr) || [];
+      
+      if (dayEntries.length > 0) {
+        // Has entries for this day
+        dayEntries.forEach(entry => {
+          ws_data.push([
+            format(parseISO(entry.date), 'EEE, MMM d, yyyy'),
+            entry.project_name || '-',
+            entry.task_description || '-',
+            entry.hours,
+            entry.is_billable ? 'Yes' : 'No'
+          ]);
+        });
+      } else {
+        // No entries - show 0 hours
+        ws_data.push([
+          format(d, 'EEE, MMM d, yyyy'),
+          '-',
+          'No attendance recorded',
+          0,
+          'No'
+        ]);
+      }
+    }
 
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
     const wb = XLSX.utils.book_new();
@@ -87,13 +108,37 @@ export const TimesheetList = ({ timesheets, loading }: TimesheetListProps) => {
       doc.text(`Submitted: ${format(parseISO(timesheet.submitted_at), 'MMM d, yyyy h:mm a')}`, 14, 51);
     }
 
-    const tableData = timesheet.entries?.map(entry => [
-      format(parseISO(entry.date), 'EEE, MMM d'),
-      entry.project_name || '-',
-      entry.task_description || '-',
-      `${entry.hours}h`,
-      entry.is_billable ? 'Yes' : 'No'
-    ]) || [];
+    // Generate all 7 days of the week
+    const tableData = [];
+    const startDate = parseISO(timesheet.week_start_date);
+    const endDate = parseISO(timesheet.week_end_date);
+    
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = format(d, 'yyyy-MM-dd');
+      const dayEntries = timesheet.entries?.filter(e => e.date === dateStr) || [];
+      
+      if (dayEntries.length > 0) {
+        // Has entries for this day
+        dayEntries.forEach(entry => {
+          tableData.push([
+            format(parseISO(entry.date), 'EEE, MMM d'),
+            entry.project_name || '-',
+            entry.task_description || '-',
+            `${entry.hours}h`,
+            entry.is_billable ? 'Yes' : 'No'
+          ]);
+        });
+      } else {
+        // No entries - show 0 hours
+        tableData.push([
+          format(d, 'EEE, MMM d'),
+          '-',
+          'No attendance recorded',
+          '0h',
+          'No'
+        ]);
+      }
+    }
 
     autoTable(doc, {
       startY: 60,

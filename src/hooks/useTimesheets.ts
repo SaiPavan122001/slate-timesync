@@ -88,6 +88,12 @@ export const useTimesheets = () => {
       if (existing && !fetchError) {
         setCurrentTimesheet(existing);
         setEntries(existing.entries || []);
+        
+        // Auto-generate entries from attendance if no entries exist
+        if (!existing.entries || existing.entries.length === 0) {
+          await autoGenerateEntriesFromAttendance(existing.id, profile.id, startDate, endDate);
+        }
+        
         return existing;
       }
 
@@ -109,6 +115,10 @@ export const useTimesheets = () => {
       const newTimesheet = { ...data, entries: [] };
       setCurrentTimesheet(newTimesheet);
       setEntries([]);
+      
+      // Auto-generate entries from attendance
+      await autoGenerateEntriesFromAttendance(data.id, profile.id, startDate, endDate);
+      
       return newTimesheet;
     } catch (error) {
       console.error('Error creating/fetching timesheet:', error);
@@ -118,6 +128,149 @@ export const useTimesheets = () => {
         variant: "destructive",
       });
       return null;
+    }
+  };
+
+  const autoGenerateEntriesFromAttendance = async (
+    timesheetId: string, 
+    profileId: string, 
+    startDate: string, 
+    endDate: string
+  ) => {
+    try {
+      // Fetch attendance records for the week
+      const { data: attendanceRecords } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('profile_id', profileId)
+        .gte('date', startDate)
+        .lte('date', endDate);
+
+      // Fetch approved leave requests for the week
+      const { data: leaveRecords } = await supabase
+        .from('leave_requests')
+        .select('*, leave_type:leave_types(name)')
+        .eq('profile_id', profileId)
+        .eq('status', 'approved')
+        .lte('start_date', endDate)
+        .gte('end_date', startDate);
+
+      // Fetch attendance policy for working hours
+      const { data: policy } = await supabase
+        .from('attendance_policies')
+        .select('*')
+        .eq('is_active', true)
+        .maybeSingle();
+
+      const workingHoursStart = policy?.working_hours_start || '09:00:00';
+      const workingHoursEnd = policy?.working_hours_end || '17:00:00';
+
+      // Generate entries for each day of the week
+      const entriesToInsert = [];
+      const currentDate = parseISO(startDate);
+      const lastDate = parseISO(endDate);
+
+      while (currentDate <= lastDate) {
+        const dateStr = format(currentDate, 'yyyy-MM-dd');
+        
+        // Check if there's a leave for this date
+        const onLeave = leaveRecords?.some(leave => {
+          const leaveStart = parseISO(leave.start_date);
+          const leaveEnd = parseISO(leave.end_date);
+          return currentDate >= leaveStart && currentDate <= leaveEnd;
+        });
+
+        if (onLeave) {
+          // On approved leave
+          const leaveType = leaveRecords?.find(leave => {
+            const leaveStart = parseISO(leave.start_date);
+            const leaveEnd = parseISO(leave.end_date);
+            return currentDate >= leaveStart && currentDate <= leaveEnd;
+          });
+          
+          entriesToInsert.push({
+            timesheet_id: timesheetId,
+            date: dateStr,
+            hours: 0,
+            project_name: 'Leave',
+            task_description: `On ${leaveType?.leave_type?.name || 'Leave'}`,
+            is_billable: false,
+          });
+        } else {
+          // Check attendance
+          const attendance = attendanceRecords?.find(a => a.date === dateStr);
+          
+          if (attendance && attendance.check_in_time) {
+            // Calculate hours from attendance
+            let hours = 0;
+            const checkIn = new Date(attendance.check_in_time);
+            
+            if (attendance.check_out_time) {
+              // Has both check-in and check-out
+              const checkOut = new Date(attendance.check_out_time);
+              hours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+              
+              // Subtract break duration if applicable
+              if (attendance.break_start_time && attendance.break_end_time) {
+                const breakStart = new Date(attendance.break_start_time);
+                const breakEnd = new Date(attendance.break_end_time);
+                const breakHours = (breakEnd.getTime() - breakStart.getTime()) / (1000 * 60 * 60);
+                hours -= breakHours;
+              }
+            } else {
+              // No check-out - auto-calculate based on policy end time
+              const endTime = new Date(attendance.check_in_time);
+              const [endHour, endMinute] = workingHoursEnd.split(':');
+              endTime.setHours(parseInt(endHour), parseInt(endMinute), 0);
+              
+              hours = (endTime.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+              
+              // Subtract break duration from policy
+              if (policy?.break_duration_minutes) {
+                hours -= policy.break_duration_minutes / 60;
+              }
+            }
+            
+            hours = Math.max(0, Math.round(hours * 4) / 4); // Round to nearest 0.25
+            
+            entriesToInsert.push({
+              timesheet_id: timesheetId,
+              date: dateStr,
+              hours: hours,
+              project_name: attendance.notes || 'Work',
+              task_description: `Attendance: ${format(checkIn, 'h:mm a')} - ${attendance.check_out_time ? format(new Date(attendance.check_out_time), 'h:mm a') : 'Auto logged out'}`,
+              is_billable: hours > 0,
+            });
+          } else {
+            // No attendance - 0 hours
+            entriesToInsert.push({
+              timesheet_id: timesheetId,
+              date: dateStr,
+              hours: 0,
+              project_name: '-',
+              task_description: 'No attendance recorded',
+              is_billable: false,
+            });
+          }
+        }
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Insert all entries
+      if (entriesToInsert.length > 0) {
+        const { data: insertedEntries, error } = await supabase
+          .from('timesheet_entries')
+          .insert(entriesToInsert)
+          .select();
+
+        if (!error && insertedEntries) {
+          setEntries(insertedEntries);
+          await updateTimesheetTotalHours(timesheetId);
+        }
+      }
+    } catch (error) {
+      console.error('Error auto-generating entries:', error);
     }
   };
 
