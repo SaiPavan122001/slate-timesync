@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, parseISO } from "date-fns";
 import * as XLSX from 'xlsx';
+import { EmployeeAttendanceDetail } from "./EmployeeAttendanceDetail";
 
 interface AttendanceRecord {
   id: string;
@@ -41,6 +42,7 @@ export function TeamAttendance() {
   const [periodType, setPeriodType] = useState<'daily' | 'weekly' | 'monthly' | 'custom'>('daily');
   const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedEmployee, setSelectedEmployee] = useState<{ id: string; name: string } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -371,7 +373,14 @@ export function TeamAttendance() {
               </thead>
               <tbody>
                 {filteredRecords.map((record) => (
-                  <tr key={record.id} className="border-b hover:bg-muted/50">
+                  <tr 
+                    key={record.id} 
+                    className="border-b hover:bg-muted/50 cursor-pointer"
+                    onClick={() => setSelectedEmployee({
+                      id: record.profile_id!,
+                      name: `${record.profiles.first_name} ${record.profiles.last_name}`
+                    })}
+                  >
                     <td className="p-3">
                       <div>
                         <div className="font-medium">
@@ -437,6 +446,18 @@ export function TeamAttendance() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Employee Attendance Detail Dialog */}
+      {selectedEmployee && (
+        <EmployeeAttendanceDetail
+          open={!!selectedEmployee}
+          onOpenChange={(open) => !open && setSelectedEmployee(null)}
+          employeeId={selectedEmployee.id}
+          employeeName={selectedEmployee.name}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      )}
     </div>
   );
 }
