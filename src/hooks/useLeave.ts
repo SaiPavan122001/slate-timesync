@@ -249,6 +249,19 @@ export function useLeave() {
       description: "Leave request submitted successfully",
     });
 
+    // Send email notification to HR
+    try {
+      await supabase.functions.invoke('send-notification-email', {
+        body: {
+          type: 'leave_submission',
+          employeeId: profile.id,
+          requestId: data.id,
+        },
+      });
+    } catch (emailError) {
+      console.error('Error sending email notification:', emailError);
+    }
+
     fetchLeaveRequests();
     return { data };
   };
@@ -289,6 +302,21 @@ export function useLeave() {
       title: "Success",
       description: `Leave request ${updates.status} successfully`,
     });
+
+    // Send email notification to employee
+    try {
+      await supabase.functions.invoke('send-notification-email', {
+        body: {
+          type: 'leave_approval',
+          employeeId: data.profile_id,
+          requestId: data.id,
+          status: updates.status,
+          rejectionReason: updates.rejection_reason,
+        },
+      });
+    } catch (emailError) {
+      console.error('Error sending email notification:', emailError);
+    }
 
     fetchLeaveRequests();
     fetchLeaveBalances();

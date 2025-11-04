@@ -390,6 +390,28 @@ export const useTimesheets = () => {
         description: "Timesheet submitted for approval",
       });
 
+      // Get timesheet details for notification
+      const { data: timesheetData } = await supabase
+        .from('timesheets')
+        .select('profile_id')
+        .eq('id', timesheetId)
+        .single();
+
+      // Send email notification to HR
+      if (timesheetData) {
+        try {
+          await supabase.functions.invoke('send-notification-email', {
+            body: {
+              type: 'timesheet_submission',
+              employeeId: timesheetData.profile_id,
+              requestId: timesheetId,
+            },
+          });
+        } catch (emailError) {
+          console.error('Error sending email notification:', emailError);
+        }
+      }
+
       await fetchTimesheets();
       if (currentTimesheet?.id === timesheetId) {
         setCurrentTimesheet(prev => prev ? { ...prev, status: 'submitted' } : null);
@@ -406,6 +428,13 @@ export const useTimesheets = () => {
 
   const approveTimesheet = async (timesheetId: string) => {
     try {
+      // Get timesheet details first
+      const { data: timesheetData } = await supabase
+        .from('timesheets')
+        .select('profile_id')
+        .eq('id', timesheetId)
+        .single();
+
       const { error } = await supabase
         .from('timesheets')
         .update({ 
@@ -421,6 +450,22 @@ export const useTimesheets = () => {
         description: "Timesheet approved",
       });
 
+      // Send email notification to employee
+      if (timesheetData) {
+        try {
+          await supabase.functions.invoke('send-notification-email', {
+            body: {
+              type: 'timesheet_approval',
+              employeeId: timesheetData.profile_id,
+              requestId: timesheetId,
+              status: 'approved',
+            },
+          });
+        } catch (emailError) {
+          console.error('Error sending email notification:', emailError);
+        }
+      }
+
       await fetchTimesheets();
     } catch (error) {
       console.error('Error approving timesheet:', error);
@@ -434,6 +479,13 @@ export const useTimesheets = () => {
 
   const rejectTimesheet = async (timesheetId: string, reason: string) => {
     try {
+      // Get timesheet details first
+      const { data: timesheetData } = await supabase
+        .from('timesheets')
+        .select('profile_id')
+        .eq('id', timesheetId)
+        .single();
+
       const { error } = await supabase
         .from('timesheets')
         .update({ 
@@ -448,6 +500,23 @@ export const useTimesheets = () => {
         title: "Success",
         description: "Timesheet rejected",
       });
+
+      // Send email notification to employee
+      if (timesheetData) {
+        try {
+          await supabase.functions.invoke('send-notification-email', {
+            body: {
+              type: 'timesheet_approval',
+              employeeId: timesheetData.profile_id,
+              requestId: timesheetId,
+              status: 'rejected',
+              rejectionReason: reason,
+            },
+          });
+        } catch (emailError) {
+          console.error('Error sending email notification:', emailError);
+        }
+      }
 
       await fetchTimesheets();
     } catch (error) {
