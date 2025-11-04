@@ -79,7 +79,8 @@ const handler = async (req: Request): Promise<Response> => {
         for (const hr of hrUsers) {
           if (hr.profiles?.email) {
             emailsToSend.push({
-              from: "HINFINITY SOLUTIONS <no-reply@yourorganization.com>",
+              // Using Resend's pre-verified test domain. For production, verify your domain at https://resend.com/domains
+              from: "HINFINITY SOLUTIONS <onboarding@resend.dev>",
               to: [hr.profiles.email],
               subject,
               html,
@@ -113,7 +114,8 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       emailsToSend.push({
-        from: "HINFINITY SOLUTIONS <no-reply@yourorganization.com>",
+        // Using Resend's pre-verified test domain. For production, verify your domain at https://resend.com/domains
+        from: "HINFINITY SOLUTIONS <onboarding@resend.dev>",
         to: [employeeProfile.email],
         subject,
         html,
