@@ -5,19 +5,6 @@ import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-// SMTP Configuration for Hostinger
-const smtpClient = new SMTPClient({
-  connection: {
-    hostname: Deno.env.get("SMTP_HOST")!,
-    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
-    tls: Deno.env.get("SMTP_SECURE") === "true",
-    auth: {
-      username: Deno.env.get("SMTP_USER")!,
-      password: Deno.env.get("SMTP_PASS")!,
-    },
-  },
-});
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -39,6 +26,19 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const payload: NotificationRequest = await req.json();
+
+    // Initialize SMTP client inside handler to avoid connection issues at boot time
+    const smtpClient = new SMTPClient({
+      connection: {
+        hostname: Deno.env.get("SMTP_HOST")!,
+        port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
+        tls: Deno.env.get("SMTP_SECURE") === "true",
+        auth: {
+          username: Deno.env.get("SMTP_USER")!,
+          password: Deno.env.get("SMTP_PASS")!,
+        },
+      },
+    });
 
     console.log("Notification request:", payload);
 
