@@ -1,10 +1,22 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { Resend } from "npm:resend@4.0.0";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// SMTP Configuration for Hostinger
+const smtpClient = new SMTPClient({
+  connection: {
+    hostname: Deno.env.get("SMTP_HOST")!,
+    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
+    tls: Deno.env.get("SMTP_SECURE") === "true",
+    auth: {
+      username: Deno.env.get("SMTP_USER")!,
+      password: Deno.env.get("SMTP_PASS")!,
+    },
+  },
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -79,8 +91,8 @@ const handler = async (req: Request): Promise<Response> => {
         for (const hr of hrUsers) {
           if (hr.profiles?.email) {
             emailsToSend.push({
-              from: "HINFINITY SOLUTIONS <notifications@onresend.com>",
-              to: [hr.profiles.email],
+              from: Deno.env.get("EMAIL_FROM")!,
+              to: hr.profiles.email,
               subject,
               html,
             });
@@ -113,8 +125,8 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       emailsToSend.push({
-        from: "HINFINITY SOLUTIONS <notifications@onresend.com>",
-        to: [employeeProfile.email],
+        from: Deno.env.get("EMAIL_FROM")!,
+        to: employeeProfile.email,
         subject,
         html,
       });
@@ -123,17 +135,24 @@ const handler = async (req: Request): Promise<Response> => {
     // Send all emails
     const results = [];
     for (const email of emailsToSend) {
-      console.log("Sending email to:", email.to);
-      const { data, error } = await resend.emails.send(email);
-      
-      if (error) {
+      try {
+        console.log("Sending email to:", email.to);
+        await smtpClient.send({
+          from: email.from,
+          to: email.to,
+          subject: email.subject,
+          content: "auto",
+          html: email.html,
+        });
+        console.log("Email sent successfully to:", email.to);
+        results.push({ success: true, to: email.to });
+      } catch (error: any) {
         console.error("Error sending email:", error);
         results.push({ success: false, error: error.message, to: email.to });
-      } else {
-        console.log("Email sent successfully:", data);
-        results.push({ success: true, data, to: email.to });
       }
     }
+    
+    await smtpClient.close();
 
     return new Response(
       JSON.stringify({ 
