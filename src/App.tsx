@@ -12,6 +12,7 @@ import Timesheets from "@/pages/Timesheets";
 import RoleManagement from "@/pages/RoleManagement";
 import Leave from "@/pages/Leave";
 import TeamManagement from "@/pages/TeamManagement";
+import Performance from "@/pages/Performance";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/leave" element={<Leave />} />
           <Route path="/role-management" element={<RoleManagement />} />
           <Route path="/team-management" element={<TeamManagement />} />
+          <Route path="/performance" element={<Performance />} />
           <Route path="/reset-password" element={<ResetPassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

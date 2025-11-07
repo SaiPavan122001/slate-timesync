@@ -192,6 +192,23 @@ export default function Dashboard() {
             </Card>
           )}
 
+          {(userRole === 'manager' || userRole === 'hr' || userRole === 'super_admin') && (
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/performance')}>
+              <CardHeader>
+                <BarChart3 className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Performance & Productivity</CardTitle>
+                <CardDescription>
+                  Track team performance and productivity metrics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full" variant="outline">
+                  View Analytics
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {userRole === 'super_admin' && (
             <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = '/role-management'}>
               <CardHeader>
