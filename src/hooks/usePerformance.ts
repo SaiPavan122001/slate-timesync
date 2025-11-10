@@ -18,11 +18,21 @@ export interface EmployeePerformance {
   performanceScore: number;
 }
 
+export interface EfficiencyMetrics {
+  taskCompletionRate: number;
+  timeUtilizationRate: number;
+  attendanceImpactScore: number;
+  overtimeOutputRatio: number;
+  overallEfficiencyScore: number;
+  efficiencyTrend: { week: string; score: number }[];
+}
+
 export interface PerformanceDetail {
   weeklyHours: { week: string; hours: number; target: number }[];
   attendanceTrend: { date: string; status: string }[];
   workloadBreakdown: { category: string; hours: number }[];
   overtimeData: { regular: number; overtime: number; undertime: number };
+  efficiency: EfficiencyMetrics;
 }
 
 export const usePerformance = () => {
@@ -144,6 +154,98 @@ export const usePerformance = () => {
     };
   };
 
+  const calculateEfficiencyMetrics = async (profileId: string, dateRange: { start: Date; end: Date }): Promise<EfficiencyMetrics> => {
+    // Fetch timesheet entries for task analysis
+    const { data: timesheetEntries } = await supabase
+      .from('timesheet_entries')
+      .select('hours, task_description, date')
+      .gte('date', format(dateRange.start, 'yyyy-MM-dd'))
+      .lte('date', format(dateRange.end, 'yyyy-MM-dd'));
+
+    // Fetch attendance for the period
+    const { data: attendance } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('profile_id', profileId)
+      .gte('date', format(dateRange.start, 'yyyy-MM-dd'))
+      .lte('date', format(dateRange.end, 'yyyy-MM-dd'));
+
+    // Task Completion Efficiency
+    const totalTasks = timesheetEntries?.length || 0;
+    const completedTasks = timesheetEntries?.filter(e => e.task_description && e.hours > 0).length || 0;
+    const taskCompletionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+    // Time Utilization Efficiency
+    const productiveHours = timesheetEntries?.reduce((sum, e) => sum + Number(e.hours), 0) || 0;
+    const workingDays = attendance?.filter(a => a.status === 'present' || a.status === 'late').length || 0;
+    const expectedHours = workingDays * 8;
+    const timeUtilizationRate = expectedHours > 0 ? (productiveHours / expectedHours) * 100 : 0;
+
+    // Attendance Impact Score
+    const totalDays = attendance?.length || 0;
+    const presentDays = attendance?.filter(a => a.status === 'present').length || 0;
+    const attendanceImpactScore = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
+
+    // Overtime vs Output Ratio
+    const overtimeHours = Math.max(0, productiveHours - expectedHours);
+    const overtimeOutputRatio = overtimeHours > 0 ? (completedTasks / overtimeHours) : completedTasks;
+
+    // Overall Efficiency Score (weighted average)
+    const overallEfficiencyScore = Math.round(
+      taskCompletionRate * 0.25 +
+      Math.min(timeUtilizationRate, 100) * 0.35 +
+      attendanceImpactScore * 0.25 +
+      (overtimeOutputRatio > 0 ? Math.min(overtimeOutputRatio * 10, 100) : 50) * 0.15
+    );
+
+    // Calculate efficiency trend for past 8 weeks
+    const efficiencyTrend = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(dateRange.start);
+      weekStart.setDate(weekStart.getDate() - (i * 7));
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      const { data: weekEntries } = await supabase
+        .from('timesheet_entries')
+        .select('hours, task_description')
+        .gte('date', format(weekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
+
+      const { data: weekAttendance } = await supabase
+        .from('attendance')
+        .select('status')
+        .eq('profile_id', profileId)
+        .gte('date', format(weekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
+
+      const weekTasks = weekEntries?.length || 0;
+      const weekCompleted = weekEntries?.filter(e => e.task_description && e.hours > 0).length || 0;
+      const weekTaskRate = weekTasks > 0 ? (weekCompleted / weekTasks) * 100 : 0;
+
+      const weekHours = weekEntries?.reduce((sum, e) => sum + Number(e.hours), 0) || 0;
+      const weekDays = weekAttendance?.filter(a => a.status === 'present' || a.status === 'late').length || 0;
+      const weekExpected = weekDays * 8;
+      const weekUtilization = weekExpected > 0 ? (weekHours / weekExpected) * 100 : 0;
+
+      const weekScore = Math.round((weekTaskRate * 0.5) + (Math.min(weekUtilization, 100) * 0.5));
+      
+      efficiencyTrend.push({
+        week: format(weekStart, 'MMM dd'),
+        score: weekScore
+      });
+    }
+
+    return {
+      taskCompletionRate: Math.round(taskCompletionRate),
+      timeUtilizationRate: Math.round(timeUtilizationRate),
+      attendanceImpactScore: Math.round(attendanceImpactScore),
+      overtimeOutputRatio: Math.round(overtimeOutputRatio * 10) / 10,
+      overallEfficiencyScore,
+      efficiencyTrend
+    };
+  };
+
   const fetchEmployeeDetail = async (profileId: string, dateRange: { start: Date; end: Date }) => {
     try {
       setLoading(true);
@@ -207,6 +309,9 @@ export const usePerformance = () => {
       const overtime = Math.max(0, totalHours - expectedHours);
       const undertime = Math.max(0, expectedHours - totalHours);
 
+      // Calculate efficiency metrics
+      const efficiencyMetrics = await calculateEfficiencyMetrics(profileId, dateRange);
+
       setPerformanceDetail({
         weeklyHours: weeklyHoursData,
         attendanceTrend: attendanceData?.map(a => ({
@@ -218,7 +323,8 @@ export const usePerformance = () => {
           regular: Math.round(regular * 10) / 10,
           overtime: Math.round(overtime * 10) / 10,
           undertime: Math.round(undertime * 10) / 10
-        }
+        },
+        efficiency: efficiencyMetrics
       });
     } catch (error) {
       console.error('Error fetching employee detail:', error);

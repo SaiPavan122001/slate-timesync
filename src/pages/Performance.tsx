@@ -11,7 +11,11 @@ import { ArrowLeft, Search, TrendingUp, TrendingDown, Clock, Target } from 'luci
 import { PerformanceChart } from '@/components/performance/PerformanceChart';
 import { AttendanceTrendChart } from '@/components/performance/AttendanceTrendChart';
 import { WorkloadChart } from '@/components/performance/WorkloadChart';
+import { EfficiencyTrendChart } from '@/components/performance/EfficiencyTrendChart';
+import { TaskEfficiencyChart } from '@/components/performance/TaskEfficiencyChart';
+import { TimeUtilizationChart } from '@/components/performance/TimeUtilizationChart';
 import { startOfMonth, endOfMonth } from 'date-fns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Performance() {
   const { user, userRole, loading: authLoading } = useAuth();
@@ -276,13 +280,107 @@ export default function Performance() {
                   </CardContent>
                 </Card>
 
-                {/* Charts */}
-                <PerformanceChart data={performanceDetail.weeklyHours} />
-                <AttendanceTrendChart data={performanceDetail.attendanceTrend} />
-                <WorkloadChart 
-                  data={performanceDetail.overtimeData}
-                  projectBreakdown={performanceDetail.workloadBreakdown}
-                />
+                {/* Tabs for Performance and Efficiency */}
+                <Tabs defaultValue="performance" className="space-y-4">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="performance">Performance Metrics</TabsTrigger>
+                    <TabsTrigger value="efficiency">Efficiency Analysis</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="performance" className="space-y-6">
+                    <PerformanceChart data={performanceDetail.weeklyHours} />
+                    <AttendanceTrendChart data={performanceDetail.attendanceTrend} />
+                    <WorkloadChart 
+                      data={performanceDetail.overtimeData}
+                      projectBreakdown={performanceDetail.workloadBreakdown}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="efficiency" className="space-y-6">
+                    {/* Efficiency Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Overall Efficiency Score
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-3xl font-bold text-primary">
+                            {performanceDetail.efficiency.overallEfficiencyScore}
+                          </div>
+                          <p className="text-xs text-muted-foreground">Out of 100</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Task Completion
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-3xl font-bold">
+                            {performanceDetail.efficiency.taskCompletionRate}%
+                          </div>
+                          <p className="text-xs text-muted-foreground">Tasks completed</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Time Utilization
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-3xl font-bold">
+                            {performanceDetail.efficiency.timeUtilizationRate}%
+                          </div>
+                          <p className="text-xs text-muted-foreground">Productive hours</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Efficiency Charts */}
+                    <EfficiencyTrendChart data={performanceDetail.efficiency.efficiencyTrend} />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <TaskEfficiencyChart 
+                        completionRate={performanceDetail.efficiency.taskCompletionRate} 
+                      />
+                      <TimeUtilizationChart 
+                        utilizationRate={performanceDetail.efficiency.timeUtilizationRate} 
+                      />
+                    </div>
+                    
+                    {/* Additional Efficiency Metrics */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Additional Efficiency Insights</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-4 border rounded-lg">
+                            <p className="text-sm text-muted-foreground mb-1">Attendance Impact</p>
+                            <p className="text-2xl font-bold text-primary">
+                              {performanceDetail.efficiency.attendanceImpactScore}%
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Regularity influences efficiency
+                            </p>
+                          </div>
+                          <div className="p-4 border rounded-lg">
+                            <p className="text-sm text-muted-foreground mb-1">Overtime Output Ratio</p>
+                            <p className="text-2xl font-bold text-primary">
+                              {performanceDetail.efficiency.overtimeOutputRatio}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Tasks per overtime hour
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
               </div>
             ) : (
               <Card className="h-full flex items-center justify-center">
